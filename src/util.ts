@@ -21,12 +21,17 @@ const SUPPORTED_PLATFORM_NAMES = {
     'win32': '.windows'
 };
 
-// Expand a path string environment variables and apply workspace folder variable substitution.
-function expandPath(folderUri: vsc.Uri, p: string) : string {
+/**
+ * Normalize a path string. Expands environment variables and applies workspace folder
+ * variable substitution. If the path is relative, it is prefixed with the workspace folder.
+ *
+ * @return The normalized path string.
+ */
+function normalizePath(folderUri: vsc.Uri, p: string) : string {
     // interpret environment variables
     p = p.replace(/(%\w+%)|(\$\w+)/g, variable => {
-        const end = variable.startsWith('%') ? 2 : 1;
-        return process.env[variable.substr(1, variable.length - end)];
+        const end = variable.startsWith('%') ? 1 : 0;
+        return process.env[variable.substring(1, variable.length - end)];
     });
 
     // interpret ${workspaceFolder} variable
@@ -43,6 +48,9 @@ function expandPath(folderUri: vsc.Uri, p: string) : string {
     if (!path.isAbsolute(p)) {
         p = path.join(folderUri.fsPath, p);
     }
+
+    // Normalize the path separators.
+    p = path.normalize(p);
 
     return p;
 }
@@ -68,7 +76,7 @@ export function configPath() : string {
     const folderUri = getWorkspacePath();
     const config = getExtensionConfig(folderUri);
     let cfgPath = config.get<string>(`configPath${getPlatformSuffix()}`, DEFAULT_CONFIG_FILE_NAME);
-    return expandPath(folderUri, cfgPath);
+    return normalizePath(folderUri, cfgPath);
 }
 
 /**
@@ -80,7 +88,7 @@ export function executablePath() : string {
     const folderUri = getWorkspacePath();
     const config = getExtensionConfig(folderUri);
     let execPath = config.get<string>(`executablePath${getPlatformSuffix()}`, DEFAULT_PATH);
-    return expandPath(folderUri, execPath);
+    return normalizePath(folderUri, execPath);
 }
 
 /**
