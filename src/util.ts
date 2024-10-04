@@ -21,29 +21,8 @@ const SUPPORTED_PLATFORM_NAMES = {
     'win32': '.windows'
 };
 
-/**
- * Retrieves the uncrustify language settings.
- *
- * @return Array of default language modes and any configured overrides.
- */
-export function modes() : Array<string> {
-    const config = getExtensionConfig();
-    const overrides = config.get<Record<string, unknown>>('langOverrides', {});
-
-    return DEFAULT_MODES.concat(Object.getOwnPropertyNames(overrides));
-}
-
-/**
- * Retrieves the configured path to the `uncrustify` configuration file.
- *
- * @return An absolute path to an `uncrustify` configuration file.
- */
-export function configPath() : string {
-    const folderUri = getWorkspacePath();
-    const config = getExtensionConfig(folderUri);
-
-    let p = config.get<string>(`configPath${getPlatformSuffix()}`, DEFAULT_CONFIG_FILE_NAME);
-
+// Expand a path string environment variables and apply workspace folder variable substitution.
+function expandPath(folderUri: vsc.Uri, p: string) : string {
     // interpret environment variables
     p = p.replace(/(%\w+%)|(\$\w+)/g, variable => {
         const end = variable.startsWith('%') ? 2 : 1;
@@ -69,14 +48,39 @@ export function configPath() : string {
 }
 
 /**
+ * Retrieves the uncrustify language settings.
+ *
+ * @return Array of default language modes and any configured overrides.
+ */
+export function modes() : Array<string> {
+    const config = getExtensionConfig();
+    const overrides = config.get<Record<string, unknown>>('langOverrides', {});
+
+    return DEFAULT_MODES.concat(Object.getOwnPropertyNames(overrides));
+}
+
+/**
+ * Retrieves the configured path to the `uncrustify` configuration file.
+ *
+ * @return An absolute path to an `uncrustify` configuration file.
+ */
+export function configPath() : string {
+    const folderUri = getWorkspacePath();
+    const config = getExtensionConfig(folderUri);
+    let cfgPath = config.get<string>(`configPath${getPlatformSuffix()}`, DEFAULT_CONFIG_FILE_NAME);
+    return expandPath(folderUri, cfgPath);
+}
+
+/**
  * Retrieves the configured `uncrustify` executable path.
  *
  * @return The path or name of the `uncrustify` executable.
  */
 export function executablePath() : string {
-    const config = getExtensionConfig();
-
-    return config.get<string>(`executablePath${getPlatformSuffix()}`, DEFAULT_PATH);
+    const folderUri = getWorkspacePath();
+    const config = getExtensionConfig(folderUri);
+    let execPath = config.get<string>(`executablePath${getPlatformSuffix()}`, DEFAULT_PATH);
+    return expandPath(folderUri, execPath);
 }
 
 /**
