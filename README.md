@@ -32,4 +32,4 @@ A default config file can automatically be created (see the [commands](#extensio
 
 ## Acknowledgements
 
-This extension was originally created and maintained by [@LaurentTreguier](https://github.com/LaurentTreguier). While it has since been archived and removed from the extension marketplace, I have relied heavily on it over the past few years and have chosen to resurrect it. To that end, any of the good stuff in this extension undoubtedly comes from the original maintainer's hard work, and I will do my best to honor that.
+This extension was originally created and maintained by [@LaurentTreguier](https://github.com/LaurentTreguier). After being archived and removed from the extension marketplace, it was resurrected and maintained by [@zachflower](https://github.com/zachflower). Thank you to any previous authors who created and maintained this extension.
