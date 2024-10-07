@@ -51,7 +51,7 @@ export default class Formatter
         options: vscode.FormattingOptions,
         token: vscode.CancellationToken
     ): Promise<vscode.TextEdit[]> {
-        const configuration = vscode.workspace.getConfiguration('uncrustify', document.uri);
+        const configuration = vscode.workspace.getConfiguration('uncrustify-format', document.uri);
         const useTempFile = configuration.get('useTempFile') || range; // range formatting is not supported with stdin
         const useReplaceOption = configuration.get('useReplaceOption');
         const useDirectFile = useTempFile || useReplaceOption;
@@ -152,7 +152,7 @@ export default class Formatter
     }
 }
 
-const langOverrides = vscode.workspace.getConfiguration('uncrustify').get('langOverrides');
+const langOverrides = vscode.workspace.getConfiguration('uncrustify-format').get('langOverrides');
 
 const languageMap = Object.assign(
     {

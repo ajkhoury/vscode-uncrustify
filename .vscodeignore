@@ -1,10 +1,23 @@
+# ignore vscode settings for extension development
 .vscode/**
-node_modules
-typings/**
+
+# ignore source files
 out/test/**
 test/**
 src/**
-**/*.map
-.gitignore
+
+# ignore .js files that are webpacked or only used for development
+out/src/**
+out/tools/**
+
+# ignore development files
 tsconfig.json
+.eslintrc.js
 webpack.config.ts
+.gitattributes
+.gitignore
+typings/**
+**/*.map
+
+# ignore node_modules
+node_modules/

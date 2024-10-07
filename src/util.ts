@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 const DEFAULT_CONFIG_FILE_NAME = 'uncrustify.cfg';
 const DEFAULT_PATH = 'uncrustify';
-const DEFAULT_MODES = ['c', 'cpp', 'csharp', 'd', 'java', 'objective-c', 'pawn', 'pde', 'vala'];
+const DEFAULT_MODES = ['c', 'cpp', 'csharp', 'd', 'java', 'objective-c', 'objective-cpp', 'pawn', 'pde', 'vala'];
 
 const SUPPORTED_PLATFORM_NAMES = {
     linux: '.linux',
@@ -50,12 +50,12 @@ function normalizePath(folderUri: vscode.Uri, p: string): string {
  *
  * @return Array of default language modes and any configured overrides.
  */
-export function modes(): Array<string> {
+function getModes(): Array<string> {
     const config = getExtensionConfig();
     const overrides = config.get<Record<string, unknown>>('langOverrides', {});
-
     return DEFAULT_MODES.concat(Object.getOwnPropertyNames(overrides));
 }
+export const modes: vscode.DocumentFilter[] = getModes().map((lang) => ({scheme: 'file', language: lang}));
 
 /**
  * Retrieves the configured path to the `uncrustify` configuration file.
@@ -118,7 +118,7 @@ export function getWorkspacePath(): vscode.Uri {
  * @return The `uncrustify` extension configuration object
  */
 export function getExtensionConfig(folderUri?: vscode.Uri): vscode.WorkspaceConfiguration {
-    return vscode.workspace.getConfiguration('uncrustify', folderUri ?? getWorkspacePath());
+    return vscode.workspace.getConfiguration('uncrustify-format', folderUri ?? getWorkspacePath());
 }
 
 /**

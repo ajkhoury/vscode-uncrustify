@@ -1,8 +1,8 @@
 {
-    "name": "uncrustify",
-    "displayName": "Uncrustify",
-    "description": "Code format using uncrustify",
-    "version": "3.2.0",
+    "name": "uncrustify-format",
+    "displayName": "Uncrustify Code Beautifer",
+    "description": "Uncrustify code formatting for Visual Studio Code",
+    "version": "4.0.3",
     "publisher": "ajkhoury",
     "license": "MIT",
     "homepage": "https://github.com/ajkhoury/vscode-uncrustify",
@@ -19,16 +19,22 @@
         "url": "https://github.com/ajkhoury/vscode-uncrustify/issues"
     },
     "engines": {
-        "vscode": "^1.47.0"
+        "vscode": "^1.94.0"
     },
     "categories": [
         "Formatters"
     ],
     "keywords": [
-        "uncrustify",
-        "format",
-        "formatting",
-        "formatter",
+        "Uncrustify",
+        "Code format",
+        "Format",
+        "Formatting",
+        "Formatter",
+        "C++",
+        "D",
+        "JavaScript",
+        "Objective-C",
+        "CUDA",
         "multi-root ready"
     ],
     "activationEvents": [
@@ -58,49 +64,49 @@
         "configuration": {
             "title": "Uncrustify",
             "properties": {
-                "uncrustify.executablePath.linux": {
+                "uncrustify-format.executablePath.linux": {
                     "type": "string",
                     "default": "uncrustify",
                     "description": "Uncrustify executable name or path",
                     "scope": "window"
                 },
-                "uncrustify.executablePath.osx": {
+                "uncrustify-format.executablePath.osx": {
                     "type": "string",
                     "default": "uncrustify",
                     "description": "Uncrustify executable name or path (macOS)",
                     "scope": "window"
                 },
-                "uncrustify.executablePath.windows": {
+                "uncrustify-format.executablePath.windows": {
                     "type": "string",
                     "default": "uncrustify.exe",
                     "description": "Uncrustify executable name or path (Windows)",
                     "scope": "window"
                 },
-                "uncrustify.configPath.linux": {
+                "uncrustify-format.configPath.linux": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (Linux)",
                     "scope": "resource"
                 },
-                "uncrustify.configPath.osx": {
+                "uncrustify-format.configPath.osx": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (macOS)",
                     "scope": "resource"
                 },
-                "uncrustify.configPath.windows": {
+                "uncrustify-format.configPath.windows": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (Windows)",
                     "scope": "resource"
                 },
-                "uncrustify.debug": {
+                "uncrustify-format.debug": {
                     "type": "boolean",
                     "default": false,
                     "description": "Toggles logging for debugging the extension",
                     "scope": "window"
                 },
-                "uncrustify.langOverrides": {
+                "uncrustify-format.langOverrides": {
                     "type": "object",
                     "default": {
                         "apex": "JAVA",
@@ -109,13 +115,13 @@
                     "description": "Overrides default language settings for uncrustify. Can be used to support languages not officially supported",
                     "scope": "window"
                 },
-                "uncrustify.useTempFile": {
+                "uncrustify-format.useTempFile": {
                     "type": "boolean",
                     "default": true,
                     "description": "Uses a temporary file to bypass VSCode's document handling",
                     "scope": "resource"
                 },
-                "uncrustify.useReplaceOption": {
+                "uncrustify-format.useReplaceOption": {
                     "type": "boolean",
                     "default": false,
                     "description": "Uses the --replace option from uncrustify to bypass VSCode's document handling",
@@ -127,68 +133,70 @@
             {
                 "title": "Create default config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.create"
+                "command": "uncrustify-format.create"
             },
             {
                 "title": "Open config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.open"
+                "command": "uncrustify-format.open"
             },
             {
                 "title": "Save config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.save"
+                "command": "uncrustify-format.save"
             },
             {
                 "title": "Save config file as preset",
                 "category": "Uncrustify",
-                "command": "uncrustify.savePreset"
+                "command": "uncrustify-format.savePreset"
             },
             {
                 "title": "Load preset config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.loadPreset"
+                "command": "uncrustify-format.loadPreset"
             },
             {
                 "title": "Delete preset config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.deletePreset"
+                "command": "uncrustify-format.deletePreset"
             },
             {
                 "title": "Upgrade config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.upgrade"
+                "command": "uncrustify-format.upgrade"
             }
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
+        "vscode:prepublish": "yarn install && yarn webpack",
         "compile": "tsc -p ./",
+        "webpack": "yarn install && tsc --build tsconfig.json && webpack --mode production",
         "lint": "eslint . --ext .ts,.tsx",
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile",
         "test": "node ./out/test/runTest.js"
     },
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.9",
+        "@types/node": "^20.16.11",
+        "@types/temp": "^0.8.34",
+        "@types/vscode": "^1.94.0",
+        "@typescript-eslint/eslint-plugin": "^3.10.1",
+        "@typescript-eslint/parser": "^3.10.1",
+        "eslint": "^8.45.0",
+        "mocha": "^10.7.3",
+        "ts-loader": "^9.5.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.5",
+        "vsce": "^1.103.1",
+        "vscode-test": "^1.6.1",
+        "webpack": "^5.94.0",
+        "webpack-cli": "^5.1.4"
+    },
     "dependencies": {
         "fs-extra": "^9.1.0",
-        "node": "^12.20.1",
         "temp": "^0.9.4"
-    },
-    "devDependencies": {
-        "@types/glob": "^7.1.3",
-        "@types/fs-extra": "^9.0.7",
-        "@types/mocha": "^8.2.0",
-        "@types/node": "^12.20.4",
-        "@types/temp": "^0.8.34",
-        "@types/vscode": "^1.47.0",
-        "@typescript-eslint/eslint-plugin": "^3.0.2",
-        "@typescript-eslint/parser": "^3.0.2",
-        "mocha": "^8.2.1",
-        "eslint": "^7.1.0",
-        "ts-loader": "^8.0.17",
-        "ts-node": "^8.10.2",
-        "typescript": "^4.1.3",
-        "vsce": "^1.85.0",
-        "vscode-test": "^1.5.1"
     }
 }

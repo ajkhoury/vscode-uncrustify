@@ -12,13 +12,12 @@ export function activate(context: vscode.ExtensionContext) {
     extContext = context;
 
     const formatter = new UncrustifyFormatter();
-    const modes = util.modes();
-    context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider(modes, formatter));
-    context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider(modes, formatter));
-    context.subscriptions.push(vscode.languages.registerOnTypeFormattingEditProvider(modes, formatter, ';', '}'));
-    logger.dbg('registered formatter for modes: ' + modes);
+    context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider(util.modes, formatter));
+    context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider(util.modes, formatter));
+    context.subscriptions.push(vscode.languages.registerOnTypeFormattingEditProvider(util.modes, formatter, ';', '}'));
+    logger.dbg('registered formatter for modes: ' + util.modes.map((mode) => mode.language).join(', '));
 
-    vscode.commands.registerCommand('uncrustify.create', () => {
+    vscode.commands.registerCommand('uncrustify-format.create', () => {
         logger.dbg('command: create');
 
         if (!vscode.workspace.workspaceFolders || !vscode.workspace.workspaceFolders.length) {
@@ -65,11 +64,11 @@ export function activate(context: vscode.ExtensionContext) {
             .catch((reason) => logger.dbg(reason));
     });
 
-    vscode.commands.registerCommand('uncrustify.open', () =>
+    vscode.commands.registerCommand('uncrustify-format.open', () =>
         vscode.commands.executeCommand('vscode.open', vscode.Uri.file(util.configPath()))
     );
 
-    vscode.commands.registerCommand('uncrustify.save', async (config) => {
+    vscode.commands.registerCommand('uncrustify-format.save', async (config) => {
         logger.dbg('command: save');
 
         if (!config) {
@@ -108,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    vscode.commands.registerCommand('uncrustify.savePreset', async (config, name) => {
+    vscode.commands.registerCommand('uncrustify-format.savePreset', async (config, name) => {
         logger.dbg('command: savePreset');
 
         if (!config) {
@@ -144,8 +143,8 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        await vscode.commands.executeCommand('uncrustify.create');
-        await vscode.commands.executeCommand('uncrustify.save', presets[name]);
+        await vscode.commands.executeCommand('uncrustify-format.create');
+        await vscode.commands.executeCommand('uncrustify-format.save', presets[name]);
 
         if (!internal) {
             vscode.window.showInformationMessage('Preset loaded !');
@@ -165,7 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
         return await (!internal && vscode.window.showInformationMessage('Preset deleted !'));
     });
 
-    vscode.commands.registerCommand('uncrustify.upgrade', async (config) => {
+    vscode.commands.registerCommand('uncrustify-format.upgrade', async (config) => {
         logger.dbg('command: upgrade');
 
         if (!config) {
@@ -173,9 +172,9 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        await vscode.commands.executeCommand('uncrustify.savePreset', config, '');
-        await vscode.commands.executeCommand('uncrustify.loadPreset', '');
-        await vscode.commands.executeCommand('uncrustify.deletePreset', '');
+        await vscode.commands.executeCommand('uncrustify-format.savePreset', config, '');
+        await vscode.commands.executeCommand('uncrustify-format.loadPreset', '');
+        await vscode.commands.executeCommand('uncrustify-format.deletePreset', '');
         return await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(util.configPath()));
     });
 }
@@ -187,7 +186,7 @@ export function deactivate() {
 export { extContext };
 
 function presetCommand(commandName: string, callback: (presets: any, name: string, internal: boolean) => any) {
-    vscode.commands.registerCommand('uncrustify.' + commandName, async (name) => {
+    vscode.commands.registerCommand('uncrustify-format.' + commandName, async (name) => {
         logger.dbg('command: ' + commandName);
 
         const presets = extContext.globalState.get('presets', {});

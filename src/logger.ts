@@ -19,7 +19,7 @@ export function log(msg: string, line = true) {
 }
 
 export function dbg(msg: string, line = true) {
-    if (vscode.workspace.getConfiguration('uncrustify').get('debug', false)) {
+    if (vscode.workspace.getConfiguration('uncrustify-format').get('debug', false)) {
         const dmsg = 'Debug: ' + msg;
 
         if (line) {
