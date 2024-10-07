@@ -32,7 +32,26 @@
         "multi-root ready"
     ],
     "activationEvents": [
-        "*"
+        "onLanguage:c",
+        "onLanguage:cpp",
+        "onLanguage:csharp",
+        "onLanguage:d",
+        "onLanguage:pawn",
+        "onLanguage:pde",
+        "onLanguage:vala",
+        "onLanguage:java",
+        "onLanguage:javascript",
+        "onLanguage:typescript",
+        "onLanguage:objective-c",
+        "onLanguage:objective-cpp",
+        "onLanguage:proto",
+        "onLanguage:proto3",
+        "onLanguage:textproto",
+        "onLanguage:apex",
+        "onLanguage:glsl",
+        "onLanguage:hlsl",
+        "onLanguage:cuda",
+        "onLanguage:cuda-cpp"
     ],
     "main": "./out/extension",
     "contributes": {
