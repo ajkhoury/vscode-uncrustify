@@ -8,12 +8,12 @@
     }
   ],
   "settings": {
-    "editor.defaultFormatter": "ajkhoury.uncrustify",
+    "editor.defaultFormatter": "ajkhoury.uncrustify-format",
     "[c]": {
-      "editor.defaultFormatter": "ajkhoury.uncrustify"
+      "editor.defaultFormatter": "ajkhoury.uncrustify-format"
     },
-    "uncrustify.configPath.linux": "uncrustify.cfg",
-    "uncrustify.configPath.windows": "uncrustify.cfg",
-    "uncrustify.configPath.macos": "uncrustify.cfg",
+    "uncrustify-format.configPath.linux": "uncrustify.cfg",
+    "uncrustify-format.configPath.windows": "uncrustify.cfg",
+    "uncrustify-format.configPath.macos": "uncrustify.cfg",
   }
 }
