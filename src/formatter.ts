@@ -52,7 +52,7 @@ export default class Formatter
         token: vscode.CancellationToken
     ): Promise<vscode.TextEdit[]> {
         const configuration = vscode.workspace.getConfiguration('uncrustify', document.uri);
-        const useTempFile = configuration.get('useTempFile');
+        const useTempFile = configuration.get('useTempFile') || range; // range formatting is not supported with stdin
         const useReplaceOption = configuration.get('useReplaceOption');
         const useDirectFile = useTempFile || useReplaceOption;
 
@@ -64,7 +64,7 @@ export default class Formatter
 
             this.tempFileName = path.join(this.tempDir, path.basename(document.fileName));
             logger.dbg('temporary file: ' + this.tempFileName);
-            await u.promisify(fs.writeFile)(this.tempFileName, document.getText());
+            await u.promisify(fs.writeFile)(this.tempFileName, document.getText(range));
         } else if (useReplaceOption) {
             await document.save();
         }
@@ -85,7 +85,7 @@ export default class Formatter
 
             const args = ['-l', languageMap[document.languageId], '-c', configPath];
             let output = Buffer.alloc(0);
-            let error = '';
+            let stderrOutput = '';
 
             if (range) {
                 args.push('--frag');
@@ -98,12 +98,12 @@ export default class Formatter
                 args.push(useTempFile ? this.tempFileName : document.fileName);
             }
 
-            const uncrustify = cp.spawn(util.executablePath(), args);
+            const uncrustifyProc = cp.spawn(util.executablePath(), args);
             const text = document.getText(range);
             logger.dbg(`launched: ${util.executablePath()} ${args.join(' ')}`);
 
-            uncrustify.on('error', reject);
-            uncrustify.on('exit', async (code) => {
+            uncrustifyProc.on('error', reject);
+            uncrustifyProc.on('exit', async (code) => {
                 logger.dbg('uncrustify exited with status: ' + code);
 
                 if (code < 0) {
@@ -115,14 +115,16 @@ export default class Formatter
                 }
             });
 
-            uncrustify.stdout.on('data', (data) => (output = Buffer.concat([output, Buffer.from(data)])));
-            uncrustify.stdout.on('close', () => {
+            uncrustifyProc.stdout.on('data', (data) => {
+                //logger.dbg('uncrustify data: ' + data); // for debugging.
+                output = Buffer.concat([output, Buffer.from(data)]);
+            });
+            uncrustifyProc.stdout.on('close', () => {
                 if (useDirectFile) {
                     return;
                 }
 
                 const result = output.toString();
-
                 if (result.length == 0 && text.length > 0) {
                     reject();
                 } else {
@@ -130,11 +132,15 @@ export default class Formatter
                 }
             });
 
-            uncrustify.stderr.on('data', (data) => (error += data.toString()));
-            uncrustify.stderr.on('close', () => logger.dbg('uncrustify exited with error: ' + error));
+            uncrustifyProc.stderr.on('data', (data) => {
+                stderrOutput += data.toString(); // not necessarily an error, uncrustify writes to stderr on windows.
+            });
+            uncrustifyProc.stderr.on('close', () => {
+                logger.dbg('uncrustify exited with: ' + stderrOutput);
+            });
 
             if (!useDirectFile) {
-                uncrustify.stdin.end(text);
+                uncrustifyProc.stdin.end(text);
             }
         });
     }
