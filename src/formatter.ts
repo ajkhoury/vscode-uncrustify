@@ -1,60 +1,64 @@
+import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
 import * as u from 'util';
 import * as temp from 'temp';
-import * as vsc from 'vscode';
 import * as logger from './logger';
 import * as util from './util';
 
 temp.track();
 
-export default class Formatter implements vsc.DocumentFormattingEditProvider,
-    vsc.DocumentRangeFormattingEditProvider,
-    vsc.OnTypeFormattingEditProvider {
-    private tempDir: string = null
-    private tempFileName: string = null
+export default class Formatter
+    implements
+        vscode.DocumentFormattingEditProvider,
+        vscode.DocumentRangeFormattingEditProvider,
+        vscode.OnTypeFormattingEditProvider
+{
+    private tempDir: string = null;
+    private tempFileName: string = null;
 
     public provideDocumentFormattingEdits(
-        document: vsc.TextDocument,
-        options: vsc.FormattingOptions,
-        token: vsc.CancellationToken
+        document: vscode.TextDocument,
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
     ) {
         return this.format(document, null, options, token);
     }
 
     public provideDocumentRangeFormattingEdits(
-        document: vsc.TextDocument,
-        range: vsc.Range,
-        options: vsc.FormattingOptions,
-        token: vsc.CancellationToken
+        document: vscode.TextDocument,
+        range: vscode.Range,
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
     ) {
         return this.format(document, range, options, token);
     }
 
-    public provideOnTypeFormattingEdits(document: vsc.TextDocument,
-        position: vsc.Position,
+    public provideOnTypeFormattingEdits(
+        document: vscode.TextDocument,
+        position: vscode.Position,
         ch: string,
-        options: vsc.FormattingOptions,
-        token: vsc.CancellationToken
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
     ) {
-        return this.format(document, new vsc.Range(new vsc.Position(0, 0), position), options, token);
+        return this.format(document, new vscode.Range(new vscode.Position(0, 0), position), options, token);
     }
 
     private async format(
-        document: vsc.TextDocument,
-        range: vsc.Range,
-        options: vsc.FormattingOptions,
-        token: vsc.CancellationToken
-    ): Promise<vsc.TextEdit[]> {
-        const configuration = vsc.workspace.getConfiguration("uncrustify", document.uri);
+        document: vscode.TextDocument,
+        range: vscode.Range,
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
+    ): Promise<vscode.TextEdit[]> {
+        const configuration = vscode.workspace.getConfiguration('uncrustify', document.uri);
         const useTempFile = configuration.get('useTempFile');
         const useReplaceOption = configuration.get('useReplaceOption');
         const useDirectFile = useTempFile || useReplaceOption;
 
         if (useTempFile) {
             if (this.tempDir == null) {
-                this.tempDir = await u.promisify(temp.mkdir)(vsc.env.appName + '.' + "uncrustify");
+                this.tempDir = await u.promisify(temp.mkdir)(vscode.env.appName + '.' + 'uncrustify');
                 logger.dbg('temporary directory: ' + this.tempDir);
             }
 
@@ -72,10 +76,9 @@ export default class Formatter implements vsc.DocumentFormattingEditProvider,
 
             try {
                 fs.accessSync(configPath);
-            }
-            catch (err) {
+            } catch (err) {
                 logger.dbg('error accessing config file: ' + err);
-                vsc.window.showErrorMessage('The uncrustify config file path is incorrect: ' + configPath);
+                vscode.window.showErrorMessage('The uncrustify config file path is incorrect: ' + configPath);
                 reject(err);
                 return;
             }
@@ -100,19 +103,19 @@ export default class Formatter implements vsc.DocumentFormattingEditProvider,
             logger.dbg(`launched: ${util.executablePath()} ${args.join(' ')}`);
 
             uncrustify.on('error', reject);
-            uncrustify.on('exit', async code => {
+            uncrustify.on('exit', async (code) => {
                 logger.dbg('uncrustify exited with status: ' + code);
 
                 if (code < 0) {
-                    vsc.window.showErrorMessage('Uncrustify exited with error code: ' + code);
+                    vscode.window.showErrorMessage('Uncrustify exited with error code: ' + code);
                     reject(code);
                 } else if (useTempFile) {
                     const result = await u.promisify(fs.readFile)(this.tempFileName);
-                    resolve([new vsc.TextEdit(this.getRange(document, range), result.toString())]);
+                    resolve([new vscode.TextEdit(this.getRange(document, range), result.toString())]);
                 }
             });
 
-            uncrustify.stdout.on('data', data => output = Buffer.concat([output, Buffer.from(data)]));
+            uncrustify.stdout.on('data', (data) => (output = Buffer.concat([output, Buffer.from(data)])));
             uncrustify.stdout.on('close', () => {
                 if (useDirectFile) {
                     return;
@@ -123,11 +126,11 @@ export default class Formatter implements vsc.DocumentFormattingEditProvider,
                 if (result.length == 0 && text.length > 0) {
                     reject();
                 } else {
-                    resolve([new vsc.TextEdit(this.getRange(document, range), result)]);
+                    resolve([new vscode.TextEdit(this.getRange(document, range), result)]);
                 }
             });
 
-            uncrustify.stderr.on('data', data => error += data.toString());
+            uncrustify.stderr.on('data', (data) => (error += data.toString()));
             uncrustify.stderr.on('close', () => logger.dbg('uncrustify exited with error: ' + error));
 
             if (!useDirectFile) {
@@ -136,14 +139,14 @@ export default class Formatter implements vsc.DocumentFormattingEditProvider,
         });
     }
 
-    private getRange(document: vsc.TextDocument, range: vsc.Range): vsc.Range {
+    private getRange(document: vscode.TextDocument, range: vscode.Range): vscode.Range {
         const lastLine = document.lineCount - 1;
         const lastCol = document.lineAt(lastLine).text.length;
-        return range || new vsc.Range(0, 0, lastLine, lastCol);
+        return range || new vscode.Range(0, 0, lastLine, lastCol);
     }
 }
 
-const langOverrides = vsc.workspace.getConfiguration('uncrustify').get('langOverrides');
+const langOverrides = vscode.workspace.getConfiguration('uncrustify').get('langOverrides');
 
 const languageMap = Object.assign(
     {
@@ -155,7 +158,7 @@ const languageMap = Object.assign(
         'objective-c': 'OC',
         pawn: 'PAWN',
         pde: 'JAVA',
-        vala: 'VALA'
+        vala: 'VALA',
     },
     langOverrides
 );
