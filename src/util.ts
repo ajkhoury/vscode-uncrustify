@@ -1,24 +1,14 @@
 import * as path from 'path';
-import * as vsc from 'vscode';
+import * as vscode from 'vscode';
 
 const DEFAULT_CONFIG_FILE_NAME = 'uncrustify.cfg';
 const DEFAULT_PATH = 'uncrustify';
-const DEFAULT_MODES = [
-    'c',
-    'cpp',
-    'csharp',
-    'd',
-    'java',
-    'objective-c',
-    'pawn',
-    'pde',
-    'vala'
-];
+const DEFAULT_MODES = ['c', 'cpp', 'csharp', 'd', 'java', 'objective-c', 'pawn', 'pde', 'vala'];
 
 const SUPPORTED_PLATFORM_NAMES = {
-    'linux': '.linux',
-    'darwin': '.osx',
-    'win32': '.windows'
+    linux: '.linux',
+    darwin: '.osx',
+    win32: '.windows',
 };
 
 /**
@@ -27,9 +17,9 @@ const SUPPORTED_PLATFORM_NAMES = {
  *
  * @return The normalized path string.
  */
-function normalizePath(folderUri: vsc.Uri, p: string) : string {
+function normalizePath(folderUri: vscode.Uri, p: string): string {
     // interpret environment variables
-    p = p.replace(/(%\w+%)|(\$\w+)/g, variable => {
+    p = p.replace(/(%\w+%)|(\$\w+)/g, (variable) => {
         const end = variable.startsWith('%') ? 1 : 0;
         return process.env[variable.substring(1, variable.length - end)];
     });
@@ -41,7 +31,7 @@ function normalizePath(folderUri: vsc.Uri, p: string) : string {
 
     // interpret ${workspaceFolder:<folder>} variables
     p = p.replace(/\$\{workspaceFolder:(.*?)\}/, (_, name) => {
-        return vsc.workspace.workspaceFolders.find(wf => wf.name == name).uri.fsPath;
+        return vscode.workspace.workspaceFolders.find((wf) => wf.name == name).uri.fsPath;
     });
 
     // prefix relative paths with the detected workspace folder
@@ -60,7 +50,7 @@ function normalizePath(folderUri: vsc.Uri, p: string) : string {
  *
  * @return Array of default language modes and any configured overrides.
  */
-export function modes() : Array<string> {
+export function modes(): Array<string> {
     const config = getExtensionConfig();
     const overrides = config.get<Record<string, unknown>>('langOverrides', {});
 
@@ -72,7 +62,7 @@ export function modes() : Array<string> {
  *
  * @return An absolute path to an `uncrustify` configuration file.
  */
-export function configPath() : string {
+export function configPath(): string {
     const folderUri = getWorkspacePath();
     const config = getExtensionConfig(folderUri);
     let cfgPath = config.get<string>(`configPath${getPlatformSuffix()}`, DEFAULT_CONFIG_FILE_NAME);
@@ -84,7 +74,7 @@ export function configPath() : string {
  *
  * @return The path or name of the `uncrustify` executable.
  */
-export function executablePath() : string {
+export function executablePath(): string {
     const folderUri = getWorkspacePath();
     const config = getExtensionConfig(folderUri);
     let execPath = config.get<string>(`executablePath${getPlatformSuffix()}`, DEFAULT_PATH);
@@ -97,20 +87,20 @@ export function executablePath() : string {
  *
  * @return A workspace folder.
  */
-export function getWorkspacePath() : vsc.Uri {
-    let folderUri: vsc.Uri;
-    const workspaces = vsc.workspace.workspaceFolders || [];
-    const textEditors = [vsc.window.activeTextEditor];
+export function getWorkspacePath(): vscode.Uri {
+    let folderUri: vscode.Uri;
+    const workspaces = vscode.workspace.workspaceFolders || [];
+    const textEditors = [vscode.window.activeTextEditor];
 
     if (workspaces.length === 0) {
         return folderUri;
     }
 
-    textEditors.push(...vsc.window.visibleTextEditors);
+    textEditors.push(...vscode.window.visibleTextEditors);
 
     // if there is a document open in the editor, use its workspace folder
-    for (const textEditor of textEditors.filter(e => e)) {
-        const workspace: vsc.WorkspaceFolder = vsc.workspace.getWorkspaceFolder(textEditor.document.uri);
+    for (const textEditor of textEditors.filter((e) => e)) {
+        const workspace: vscode.WorkspaceFolder = vscode.workspace.getWorkspaceFolder(textEditor.document.uri);
 
         if (workspace) {
             return workspace.uri;
@@ -127,8 +117,8 @@ export function getWorkspacePath() : vsc.Uri {
  *
  * @return The `uncrustify` extension configuration object
  */
-export function getExtensionConfig(folderUri?: vsc.Uri) : vsc.WorkspaceConfiguration {
-    return vsc.workspace.getConfiguration('uncrustify', folderUri ?? getWorkspacePath());
+export function getExtensionConfig(folderUri?: vscode.Uri): vscode.WorkspaceConfiguration {
+    return vscode.workspace.getConfiguration('uncrustify', folderUri ?? getWorkspacePath());
 }
 
 /**
@@ -138,6 +128,6 @@ export function getExtensionConfig(folderUri?: vsc.Uri) : vsc.WorkspaceConfigura
  *
  * @return The platform configuration suffix
  */
-export function getPlatformSuffix(platform?: string) : string {
+export function getPlatformSuffix(platform?: string): string {
     return SUPPORTED_PLATFORM_NAMES[platform ?? process.platform];
 }
