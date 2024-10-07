@@ -1,8 +1,8 @@
 {
-    "name": "uncrustify",
-    "displayName": "Uncrustify",
-    "description": "Code format using uncrustify",
-    "version": "3.2.0",
+    "name": "uncrustify-format",
+    "displayName": "Uncrustify Code Beautifer",
+    "description": "Uncrustify code formatting for Visual Studio Code",
+    "version": "3.2.2",
     "publisher": "ajkhoury",
     "license": "MIT",
     "homepage": "https://github.com/ajkhoury/vscode-uncrustify",
@@ -25,10 +25,16 @@
         "Formatters"
     ],
     "keywords": [
-        "uncrustify",
-        "format",
-        "formatting",
-        "formatter",
+        "Uncrustify",
+        "Code format",
+        "Format",
+        "Formatting",
+        "Formatter",
+        "C++",
+        "D",
+        "JavaScript",
+        "Objective-C",
+        "CUDA",
         "multi-root ready"
     ],
     "activationEvents": [
@@ -58,49 +64,49 @@
         "configuration": {
             "title": "Uncrustify",
             "properties": {
-                "uncrustify.executablePath.linux": {
+                "uncrustify-format.executablePath.linux": {
                     "type": "string",
                     "default": "uncrustify",
                     "description": "Uncrustify executable name or path",
                     "scope": "window"
                 },
-                "uncrustify.executablePath.osx": {
+                "uncrustify-format.executablePath.osx": {
                     "type": "string",
                     "default": "uncrustify",
                     "description": "Uncrustify executable name or path (macOS)",
                     "scope": "window"
                 },
-                "uncrustify.executablePath.windows": {
+                "uncrustify-format.executablePath.windows": {
                     "type": "string",
                     "default": "uncrustify.exe",
                     "description": "Uncrustify executable name or path (Windows)",
                     "scope": "window"
                 },
-                "uncrustify.configPath.linux": {
+                "uncrustify-format.configPath.linux": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (Linux)",
                     "scope": "resource"
                 },
-                "uncrustify.configPath.osx": {
+                "uncrustify-format.configPath.osx": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (macOS)",
                     "scope": "resource"
                 },
-                "uncrustify.configPath.windows": {
+                "uncrustify-format.configPath.windows": {
                     "type": "string",
                     "default": "uncrustify.cfg",
                     "description": "Path to the uncrustify configuration file relative to the workspace root (Windows)",
                     "scope": "resource"
                 },
-                "uncrustify.debug": {
+                "uncrustify-format.debug": {
                     "type": "boolean",
                     "default": false,
                     "description": "Toggles logging for debugging the extension",
                     "scope": "window"
                 },
-                "uncrustify.langOverrides": {
+                "uncrustify-format.langOverrides": {
                     "type": "object",
                     "default": {
                         "apex": "JAVA",
@@ -109,13 +115,13 @@
                     "description": "Overrides default language settings for uncrustify. Can be used to support languages not officially supported",
                     "scope": "window"
                 },
-                "uncrustify.useTempFile": {
+                "uncrustify-format.useTempFile": {
                     "type": "boolean",
                     "default": true,
                     "description": "Uses a temporary file to bypass VSCode's document handling",
                     "scope": "resource"
                 },
-                "uncrustify.useReplaceOption": {
+                "uncrustify-format.useReplaceOption": {
                     "type": "boolean",
                     "default": false,
                     "description": "Uses the --replace option from uncrustify to bypass VSCode's document handling",
@@ -127,37 +133,37 @@
             {
                 "title": "Create default config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.create"
+                "command": "uncrustify-format.create"
             },
             {
                 "title": "Open config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.open"
+                "command": "uncrustify-format.open"
             },
             {
                 "title": "Save config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.save"
+                "command": "uncrustify-format.save"
             },
             {
                 "title": "Save config file as preset",
                 "category": "Uncrustify",
-                "command": "uncrustify.savePreset"
+                "command": "uncrustify-format.savePreset"
             },
             {
                 "title": "Load preset config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.loadPreset"
+                "command": "uncrustify-format.loadPreset"
             },
             {
                 "title": "Delete preset config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.deletePreset"
+                "command": "uncrustify-format.deletePreset"
             },
             {
                 "title": "Upgrade config file",
                 "category": "Uncrustify",
-                "command": "uncrustify.upgrade"
+                "command": "uncrustify-format.upgrade"
             }
         ]
     },
