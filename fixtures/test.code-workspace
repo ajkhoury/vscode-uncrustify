@@ -8,9 +8,9 @@
     }
   ],
   "settings": {
-    "editor.defaultFormatter": "zachflower.uncrustify",
+    "editor.defaultFormatter": "ajkhoury.uncrustify",
     "[c]": {
-      "editor.defaultFormatter": "zachflower.uncrustify"
+      "editor.defaultFormatter": "ajkhoury.uncrustify"
     },
     "uncrustify.configPath.linux": "uncrustify.cfg",
     "uncrustify.configPath.windows": "uncrustify.cfg",
